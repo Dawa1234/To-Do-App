@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:todo/presentation/screens/authentication/login.dart';
 import 'package:todo/presentation/theme/mainTheme.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -20,7 +21,7 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    // _navigateTo(LoginScreen.route);
+    _navigateTo(LoginScreen.route);
   }
 
   @override

@@ -1,6 +1,7 @@
 // ignore: file_names
 import 'package:flutter/material.dart';
 import 'package:todo/presentation/screens/authentication/login.dart';
+import 'package:todo/presentation/screens/authentication/register.dart';
 import 'package:todo/presentation/screens/recycle/recycle_bin.dart';
 import 'package:todo/presentation/screens/splashScreen.dart';
 import 'package:todo/presentation/screens/tasks/taskScreen.dart';
@@ -12,6 +13,7 @@ class AppRouter {
     RecycleBinScreen.route: (context) => const RecycleBinScreen(),
     TaskTabScreen.route: (context) => const TaskTabScreen(),
     LoginScreen.route: (context) => LoginScreen(),
+    RegisterScreen.route: (context) => RegisterScreen(),
     SplashScreen.route: (context) => const SplashScreen(),
   };
 }
