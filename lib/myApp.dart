@@ -4,7 +4,7 @@ import 'package:todo/logic/swtich/switch_bloc.dart';
 import 'package:todo/logic/task/task_bloc.dart';
 import 'package:todo/logic/bloc_exports.dart';
 import 'package:todo/presentation/router/appRoutes.dart';
-import 'package:todo/presentation/screens/tasks/taskTabs.dart';
+import 'package:todo/presentation/screens/authentication/login.dart';
 import 'package:todo/presentation/theme/mainTheme.dart';
 
 class MyApp extends StatelessWidget {
@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
                 ? AppTheme.darkThemeData
                 : AppTheme.lightThemeData,
             debugShowCheckedModeBanner: false,
-            initialRoute: TaskTabScreen.route,
+            initialRoute: LoginScreen.route,
             routes: AppRouter.getRoutes,
           );
         },
