@@ -1,13 +1,32 @@
-import 'dart:developer';
-
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:todo/presentation/screens/authentication/register.dart';
+import 'package:todo/presentation/screens/tasks/taskTabs.dart';
 import 'package:todo/presentation/theme/mainTheme.dart';
 
 class LoginScreen extends StatelessWidget {
   LoginScreen({super.key});
   static const route = "/loginScreen";
   final _key = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _auth = FirebaseAuth.instance;
+  void login(BuildContext context, String email, String password) async {
+    try {
+      await _auth
+          .signInWithEmailAndPassword(email: email, password: password)
+          .then((value) {
+        if (value.user != null) {
+          Navigator.pushReplacementNamed(context, TaskTabScreen.route);
+          return;
+        }
+        ScaffoldMessenger.of(context)
+            .showSnackBar(const SnackBar(content: Text("Invalid Credintials")));
+      });
+    } catch (e) {
+      return;
+    }
+  }
 
   final InputDecoration _username = InputDecoration(
       prefixIcon: const Icon(Icons.person),
@@ -105,6 +124,7 @@ class LoginScreen extends StatelessWidget {
                         child: Column(
                           children: [
                             TextFormField(
+                              controller: _emailController,
                               validator: (value) {
                                 if (value!.isEmpty) {
                                   return "*Required*";
@@ -115,6 +135,7 @@ class LoginScreen extends StatelessWidget {
                             ),
                             AppTheme.verticalGap20,
                             TextFormField(
+                              controller: _passwordController,
                               validator: (value) {
                                 if (value!.isEmpty) {
                                   return "*Required*";
@@ -128,9 +149,10 @@ class LoginScreen extends StatelessWidget {
                             SizedBox(
                               width: double.infinity,
                               child: ElevatedButton(
-                                  onPressed: () {
+                                  onPressed: () async {
                                     if (_key.currentState!.validate()) {
-                                      log("Login");
+                                      login(context, _emailController.text,
+                                          _passwordController.text);
                                     }
                                   },
                                   child: const Text(

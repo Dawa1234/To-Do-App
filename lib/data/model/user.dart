@@ -1,9 +1,9 @@
-class User {
+class UserData {
   String? username;
   String? password;
   String? uid;
 
-  User({this.username, this.password, this.uid});
+  UserData({this.username, this.password, this.uid});
 
   Map<String, dynamic> toJson() {
     return {
@@ -13,8 +13,8 @@ class User {
     };
   }
 
-  factory User.fromJson(Map<String, dynamic> json) {
-    return User(
+  factory UserData.fromJson(Map<String, dynamic> json) {
+    return UserData(
       username: json['username'],
       password: json['password'],
       uid: json['uid'],

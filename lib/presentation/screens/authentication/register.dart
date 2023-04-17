@@ -1,12 +1,41 @@
 import 'dart:developer';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:todo/data/model/user.dart';
 import 'package:todo/presentation/screens/authentication/login.dart';
 import 'package:todo/presentation/theme/mainTheme.dart';
 
 class RegisterScreen extends StatelessWidget {
   RegisterScreen({super.key});
   static const route = "/registerScreen";
+  final _usernameController = TextEditingController();
+  final _passwordController = TextEditingController();
   final _key = GlobalKey<FormState>();
+  final _auth = FirebaseAuth.instance;
+
+  Future<int> _registerUser(String email, String password) async {
+    try {
+      await _auth
+          .createUserWithEmailAndPassword(email: email, password: password)
+          .then((value) {
+        saveToFirebase(value);
+      });
+      return 1;
+    } catch (e) {
+      return 0;
+    }
+  }
+
+  void saveToFirebase(UserCredential value) async {
+    final fireStore = FirebaseFirestore.instance;
+    UserData user = UserData();
+    user.username = _usernameController.text;
+    user.password = _passwordController.text;
+    user.uid = value.user!.uid;
+    await fireStore.collection('Users').doc(user.uid!).set(user.toJson());
+  }
 
   final InputDecoration _username = InputDecoration(
       prefixIcon: const Icon(Icons.person),
@@ -108,9 +137,13 @@ class RegisterScreen extends StatelessWidget {
                         child: Column(
                           children: [
                             TextFormField(
+                              controller: _usernameController,
                               validator: (value) {
                                 if (value!.isEmpty) {
                                   return "*Required*";
+                                } else if (!value.contains("@") &&
+                                    !value.contains("gmail.com")) {
+                                  return "*Bad Email Format*";
                                 }
                                 return null;
                               },
@@ -118,6 +151,7 @@ class RegisterScreen extends StatelessWidget {
                             ),
                             AppTheme.verticalGap20,
                             TextFormField(
+                              controller: _passwordController,
                               validator: (value) {
                                 if (value!.isEmpty) {
                                   return "*Required*";
@@ -131,9 +165,16 @@ class RegisterScreen extends StatelessWidget {
                             SizedBox(
                               width: double.infinity,
                               child: ElevatedButton(
-                                  onPressed: () {
+                                  onPressed: () async {
                                     if (_key.currentState!.validate()) {
-                                      log("Login");
+                                      int status = await _registerUser(
+                                          _usernameController.text,
+                                          _passwordController.text);
+                                      if (status > 0) {
+                                        log("Register Success");
+                                      } else {
+                                        log("Register failed");
+                                      }
                                     }
                                   },
                                   child: const Text(
