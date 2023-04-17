@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "208698569555",
+    "project_id": "todo-ffaad",
+    "storage_bucket": "todo-ffaad.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:208698569555:android:1582b6120faf291a9ba7a6",
+        "android_client_info": {
+          "package_name": "com.task.todo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "208698569555-hrnvs3uddafn65pnpgn4ditmkedbr6gl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAGt6Y1frVGS2i_fORoq_nsi_poq903dCE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "208698569555-hrnvs3uddafn65pnpgn4ditmkedbr6gl.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
