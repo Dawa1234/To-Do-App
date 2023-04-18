@@ -1,9 +1,9 @@
-import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:todo/data/model/user.dart';
+import 'package:todo/logic/bloc_exports.dart';
+import 'package:todo/logic/loading/loading_bloc.dart';
 import 'package:todo/presentation/screens/authentication/login.dart';
 import 'package:todo/presentation/theme/mainTheme.dart';
 
@@ -15,15 +15,21 @@ class RegisterScreen extends StatelessWidget {
   final _key = GlobalKey<FormState>();
   final _auth = FirebaseAuth.instance;
 
-  Future<int> _registerUser(String email, String password) async {
+  Future<int> _registerUser(
+      BuildContext context, String email, String password) async {
     try {
       await _auth
           .createUserWithEmailAndPassword(email: email, password: password)
           .then((value) {
         saveToFirebase(value);
       });
+      BlocProvider.of<LoadingBloc>(context).add(HideLoading());
+      Navigator.pushReplacementNamed(context, LoginScreen.route);
       return 1;
     } catch (e) {
+      BlocProvider.of<LoadingBloc>(context).add(HideLoading());
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(e.toString())));
       return 0;
     }
   }
@@ -164,25 +170,40 @@ class RegisterScreen extends StatelessWidget {
                             AppTheme.verticalGap30,
                             SizedBox(
                               width: double.infinity,
-                              child: ElevatedButton(
-                                  onPressed: () async {
-                                    if (_key.currentState!.validate()) {
-                                      int status = await _registerUser(
-                                          _usernameController.text,
-                                          _passwordController.text);
-                                      if (status > 0) {
-                                        log("Register Success");
-                                      } else {
-                                        log("Register failed");
-                                      }
-                                    }
-                                  },
-                                  child: const Text(
-                                    "REGISTER",
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 18),
-                                  )),
+                              child: ElevatedButton(onPressed: () async {
+                                if (_key.currentState!.validate()) {
+                                  BlocProvider.of<LoadingBloc>(context)
+                                      .add(ShowLoading());
+                                  await _registerUser(
+                                      context,
+                                      _usernameController.text,
+                                      _passwordController.text);
+                                }
+                              }, child: BlocBuilder<LoadingBloc, LoadingState>(
+                                builder: (context, state) {
+                                  return Wrap(
+                                    children: [
+                                      const Text(
+                                        "REGISTER",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 18),
+                                      ),
+                                      AppTheme.horizontalGap10,
+                                      state.isLoading
+                                          ? const SizedBox(
+                                              height: 20,
+                                              width: 20,
+                                              child: CircularProgressIndicator(
+                                                color: Colors.white,
+                                                strokeWidth: 2,
+                                              ),
+                                            )
+                                          : const Text("")
+                                    ],
+                                  );
+                                },
+                              )),
                             ),
                             AppTheme.verticalGap20,
                             GestureDetector(

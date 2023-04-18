@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:todo/data/model/task.dart';
 import 'package:todo/logic/bloc_exports.dart';
 import 'package:todo/logic/swtich/switch_bloc.dart';
+import 'package:todo/presentation/screens/authentication/login.dart';
 import 'package:todo/presentation/screens/recycle/recycle_bin.dart';
 
 class DrawerScreen extends StatefulWidget {
@@ -51,14 +52,18 @@ class _DrawerScreenState extends State<DrawerScreen> {
               ),
               const Divider(),
               // Recycle bin
-              GestureDetector(
+              ListTile(
                 onTap: () =>
                     Navigator.pushNamed(context, RecycleBinScreen.route),
-                child: ListTile(
-                  leading: const Icon(Icons.delete),
-                  title: const Text("Recycle Bin"),
-                  trailing: Text(widget.deletedTask.length.toString()),
-                ),
+                leading: const Icon(Icons.delete),
+                title: const Text("Recycle Bin"),
+                trailing: Text(widget.deletedTask.length.toString()),
+              ),
+              ListTile(
+                onTap: () =>
+                    Navigator.pushReplacementNamed(context, LoginScreen.route),
+                leading: const Icon(Icons.logout),
+                title: const Text("Log Out"),
               ),
               BlocBuilder<SwitchBloc, SwitchState>(
                 builder: (context, state) {

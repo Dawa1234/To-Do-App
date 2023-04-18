@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:todo/logic/bloc_exports.dart';
+import 'package:todo/logic/loading/loading_bloc.dart';
 import 'package:todo/presentation/screens/authentication/register.dart';
 import 'package:todo/presentation/screens/tasks/taskTabs.dart';
 import 'package:todo/presentation/theme/mainTheme.dart';
@@ -11,20 +13,21 @@ class LoginScreen extends StatelessWidget {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _auth = FirebaseAuth.instance;
-  void login(BuildContext context, String email, String password) async {
+  Future<int> login(BuildContext context, String email, String password) async {
+    int status = 0;
     try {
       await _auth
           .signInWithEmailAndPassword(email: email, password: password)
           .then((value) {
         if (value.user != null) {
-          Navigator.pushReplacementNamed(context, TaskTabScreen.route);
-          return;
+          status = 1;
         }
-        ScaffoldMessenger.of(context)
-            .showSnackBar(const SnackBar(content: Text("Invalid Credintials")));
       });
+      return status;
     } catch (e) {
-      return;
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(e.toString())));
+      return 0;
     }
   }
 
@@ -148,19 +151,55 @@ class LoginScreen extends StatelessWidget {
                             AppTheme.verticalGap30,
                             SizedBox(
                               width: double.infinity,
-                              child: ElevatedButton(
-                                  onPressed: () async {
-                                    if (_key.currentState!.validate()) {
-                                      login(context, _emailController.text,
-                                          _passwordController.text);
+                              child: ElevatedButton(onPressed: () async {
+                                if (_key.currentState!.validate()) {
+                                  BlocProvider.of<LoadingBloc>(context)
+                                      .add(ShowLoading());
+                                  await login(context, _emailController.text,
+                                          _passwordController.text)
+                                      .then((value) {
+                                    if (value > 0) {
+                                      BlocProvider.of<LoadingBloc>(context)
+                                          .add(HideLoading());
+                                      Navigator.of(context)
+                                          .pushReplacementNamed(
+                                              TaskTabScreen.route);
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(const SnackBar(
+                                              backgroundColor: Colors.green,
+                                              duration: Duration(seconds: 2),
+                                              content: Text("Logged In")));
+                                      return;
                                     }
-                                  },
-                                  child: const Text(
-                                    "LOGIN",
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 18),
-                                  )),
+                                    BlocProvider.of<LoadingBloc>(context)
+                                        .add(HideLoading());
+                                  });
+                                }
+                              }, child: BlocBuilder<LoadingBloc, LoadingState>(
+                                builder: (context, state) {
+                                  return Wrap(
+                                    children: [
+                                      const Text(
+                                        "LOGIN",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 18),
+                                      ),
+                                      AppTheme.horizontalGap10,
+                                      state.isLoading
+                                          ? const SizedBox(
+                                              height: 20,
+                                              width: 20,
+                                              child: CircularProgressIndicator(
+                                                color: Colors.white,
+                                                strokeWidth: 2,
+                                              ),
+                                            )
+                                          : const Text("")
+                                    ],
+                                  );
+                                },
+                              )),
                             ),
                             AppTheme.verticalGap20,
                             GestureDetector(

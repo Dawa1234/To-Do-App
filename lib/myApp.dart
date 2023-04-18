@@ -1,5 +1,6 @@
 // ignore: file_names
 import 'package:flutter/material.dart';
+import 'package:todo/logic/loading/loading_bloc.dart';
 import 'package:todo/logic/swtich/switch_bloc.dart';
 import 'package:todo/logic/task/task_bloc.dart';
 import 'package:todo/logic/bloc_exports.dart';
@@ -16,6 +17,7 @@ class MyApp extends StatelessWidget {
       providers: [
         BlocProvider(create: (context) => TaskBloc()),
         BlocProvider(create: (context) => SwitchBloc()),
+        BlocProvider(create: (context) => LoadingBloc()),
       ],
       child: BlocBuilder<SwitchBloc, SwitchState>(
         builder: (context, state) {
