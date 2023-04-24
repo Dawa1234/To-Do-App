@@ -1,4 +1,11 @@
-# todo
+# To Do Application
+
+## Features
+- Add Tasks.
+- List of completed tasks, show number of completed tasks.
+- List of favourite task, show number of favourite tasks.
+- Delete/move task(s) to bin.
+- Permanently delete task(s).
 
 A new Flutter project.
 
